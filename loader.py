@@ -12,11 +12,13 @@ r = requests.get(morph_api_url, params={
 })
 results = r.json()
 if len(results) > 0:
-    print("DATA COLLECTTION PROCESS START ON %s" % datetime.now().isoformat())
+    print("DATA COLLECTTION PROCESS START ON %s FOR %s OBSERVATIONS" % (datetime.now().isoformat(),len(results)))
     connection = pgsql.PGSql()
     for data in results:
         THGNAME = data['name']
+        print(THGNAME)
         RESTIME = data['date']
+        print(RESTIME)
         for k,v in data.iteritems():
             if k in OBSPROP:
                 sql = """Select  ds."ID", ds."DESCRIPTION", ds."THING_ID" FROM "DATASTREAMS" ds, "OBS_PROPERTIES" op, "THINGS" thg 
@@ -26,11 +28,11 @@ if len(results) > 0:
                 connection.close()
                 if DSID:
                     # GET LAST INSERT DATE
-                    sql = """select "RESULT_TIME"::timestamp as "LAST_DATE" from "OBSERVATIONS2" where "DATASTREAM_ID" = %s order by "RESULT_TIME"::date DESC limit 1""" % DSID[0][0]
+                    sql = """select to_char("RESULT_TIME"::timestamptz at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') as "LAST_DATE" from "OBSERVATIONS2" where "DATASTREAM_ID" = %s order by "RESULT_TIME"::date DESC limit 1""" % DSID[0][0]
                     connection.connect()
                     LASTDATE = connection.query(sql, False)
                     connection.close()
-                    if datetime.strptime(RESTIME, '%Y-%m-%dT%H:%M:%SZ') > LASTDATE[0][0]:  # 2018-09-01T21:00:00Z
+                    if datetime.strptime(RESTIME, '%Y-%m-%dT%H:%M:%SZ') > datetime.strptime(LASTDATE[0][0], '%Y-%m-%dT%H:%M:%SZ'):  # 2018-09-01T21:00:00Z
                         if v is not None:
                             print("%s - INFO: INSERTING NEW OBSERVATION VALUE '%s' FOR PROPERTY_ID '%s' WITH TIMESTAMP '%s' FOR DS ID '%s' DS DESCRIPTION '%s'" % (datetime.now().isoformat(),v,OBSPROP[k], RESTIME, DSID[0][0], DSID[0][1]))
                             sql = """insert into "OBSERVATIONS2"("RESULT_TIME","RESULT_NUMBER","DATASTREAM_ID","FEATURE_ID") VALUES ('%s',%s,%s,%s) RETURNING "ID" """ % (RESTIME,v,DSID[0][0],DSID[0][2])
