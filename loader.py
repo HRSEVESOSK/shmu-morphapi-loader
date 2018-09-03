@@ -5,7 +5,7 @@ morph_api_key = config.morphapikey
 YESTERDAY = (datetime.today() - timedelta(1)).isoformat()
 OBSPROP = json.loads(json.dumps(config.obsprop))
 
-QUERY = "SELECT * FROM data WHERE date >= '%s' ORDER BY date DESC" % YESTERDAY
+QUERY = "SELECT * FROM data WHERE date >= '%s' ORDER BY date ASC" % YESTERDAY
 r = requests.get(morph_api_url, params={
   'key': morph_api_key,
   'query': QUERY
