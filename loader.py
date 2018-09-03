@@ -31,14 +31,16 @@ if len(results) > 0:
                     LASTDATE = connection.query(sql, False)
                     connection.close()
                     if datetime.strptime(RESTIME, '%Y-%m-%dT%H:%M:%SZ') > LASTDATE[0][0]:  # 2018-09-01T21:00:00Z
-                        print("%s - INFO: INSERTING NEW OBSERVATION VALUE '%s' FOR PROPERTY_ID '%s' WITH TIMESTAMP '%s' FOR DS ID '%s' DS DESCRIPTION '%s'" % (datetime.now().isoformat(),v,OBSPROP[k], RESTIME, DSID[0][0], DSID[0][1]))
-                        sql = """insert into "OBSERVATIONS2"("RESULT_TIME","RESULT_NUMBER","DATASTREAM_ID","FEATURE_ID") VALUES ('%s',%s,%s,%s) RETURNING "ID" """ % (RESTIME,v,DSID[0][0],DSID[0][2])
-                        connection.connect()
-                        OBSID = connection.query(sql, False)
-                        connection.close()
-                        if OBSID[0][0] > 0:
-                            print("INSERT SUCCESS. OBSERVATION ID: %s" % OBSID[0][0])
-                            exit()
+                        if v is not None:
+                            print("%s - INFO: INSERTING NEW OBSERVATION VALUE '%s' FOR PROPERTY_ID '%s' WITH TIMESTAMP '%s' FOR DS ID '%s' DS DESCRIPTION '%s'" % (datetime.now().isoformat(),v,OBSPROP[k], RESTIME, DSID[0][0], DSID[0][1]))
+                            sql = """insert into "OBSERVATIONS2"("RESULT_TIME","RESULT_NUMBER","DATASTREAM_ID","FEATURE_ID") VALUES ('%s',%s,%s,%s) RETURNING "ID" """ % (RESTIME,v,DSID[0][0],DSID[0][2])
+                            connection.connect()
+                            OBSID = connection.query(sql, False)
+                            connection.close()
+                            if OBSID[0][0] > 0:
+                                print("%s - INFO: INSERT SUCCESS. OBSERVATION ID: %s" % (datetime.now().isoformat(),OBSID[0][0]))
+                        else:
+                            print("%s - INFO: PARAMETER '%s' HAS VALUE: '%s'" % (datetime.now().isoformat(),k,v))
                     else:
                         print("%s - INFO: RECENT DATA ALREADY STORED IN DB FOR DS ID %s" % (datetime.now().isoformat(), DSID[0][0]))
                 else:
