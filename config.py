@@ -1,6 +1,6 @@
 localhost = True
 server = False
-morphapikey = '2AMSouHpRtz5kxsTtmUX'
+morphapikey = 'KEYHERE'
 obstable='OBSERVATIONS'
 obsprop = {
     "ta_2m":1,
@@ -11,8 +11,8 @@ obsprop = {
     "wd_avg":6
 }
 if localhost:
-    dbhost = '5.189.139.50'
-    dbport = '5432'
-    dbname = 'sensorthings_sk'
-    dbuser = 'sensorthings'
-    dbpwd = 'sensorthings'
+    dbhost = 'DBIPHERE'
+    dbport = 'DBPORTHERE'
+    dbname = 'DBNAMAEHERE'
+    dbuser = 'DBUSERHERE'
+    dbpwd = 'DBPASHERE'
