@@ -34,8 +34,8 @@ if len(results) > 0:
                 connection.close()
                 if DSID:
                     # COMPARE RESULT_TIME_START IN DB WITH DATE FROM API
-                    sql = """select "ID" from "OBSERVATIONS2" 
-                              where "DATASTREAM_ID" = %s and "RESULT_TIME" = '%s'""" % (DSID[0][0],RESTIME) # to_char("RESULT_TIME"::timestamptz at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') as "LAST_DATE"
+                    sql = """select "ID" from "%s" 
+                              where "DATASTREAM_ID" = %s and "RESULT_TIME" = '%s'""" % (config.obstable,DSID[0][0],RESTIME) # to_char("RESULT_TIME"::timestamptz at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') as "LAST_DATE"
                     connection.connect()
                     OID = connection.query(sql, False)
                     connection.close()
@@ -49,7 +49,7 @@ if len(results) > 0:
                     #if datetime.strptime(RESTIME, '%Y-%m-%dT%H:%M:%SZ') != datetime.strptime(LASTDATE[0][0], '%Y-%m-%dT%H:%M:%SZ'):  # 2018-09-01T21:00:00Z)
                         if v is not None:
                             print("%s - INFO: INSERTING NEW OBSERVATION VALUE '%s' FOR PROPERTY_ID '%s' WITH TIMESTAMP '%s' FOR DS ID '%s' DS DESCRIPTION '%s'" % (datetime.now().isoformat(),v,OBSPROP[k], RESTIME, DSID[0][0], DSID[0][1]))
-                            sql = """insert into "OBSERVATIONS2"("RESULT_TIME","RESULT_NUMBER","DATASTREAM_ID","FEATURE_ID") VALUES ('%s',%s,%s,%s) RETURNING "ID" """ % (RESTIME,v,DSID[0][0],DSID[0][2])
+                            sql = """insert into "%s"("RESULT_TIME","RESULT_NUMBER","DATASTREAM_ID","FEATURE_ID") VALUES ('%s',%s,%s,%s) RETURNING "ID" """ % (config.obstable,RESTIME,v,DSID[0][0],DSID[0][2])
                             connection.connect()
                             OBSID = connection.query(sql, False)
                             connection.close()
