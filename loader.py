@@ -6,7 +6,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument("-begin",required=False,dest="b",help="Query observations FROM date YYYY-MM-DD")
 ap.add_argument("-end",required=False,dest="e",help="Query observations TO date YYYY-MM-DD")
 args = vars(ap.parse_args())
-YESTERDAY = (datetime.today() - timedelta(6)).isoformat()
+YESTERDAY = (datetime.today() - timedelta(3)).isoformat()
 if args['b'] and args['e']:
     QUERY = "SELECT * FROM data WHERE date >= '%s' AND date <= '%s' ORDER BY date DESC" % (args['b'], args['e'])
 else:
@@ -25,7 +25,7 @@ if len(results) > 0:
         print(THGNAME)
         RESTIME = data['date']
         print(RESTIME)
-        for k,v in data.iteritems():
+        for k,v in data.items():
             if k in OBSPROP:
                 sql = """Select  ds."ID", ds."DESCRIPTION", ds."THING_ID" FROM "DATASTREAMS" ds, "OBS_PROPERTIES" op, "THINGS" thg 
                             WHERE ds."OBS_PROPERTY_ID" = op."ID" AND thg."NAME" = '%s ' AND ds."OBS_PROPERTY_ID" = %s AND ds."THING_ID" = thg."ID";""" % (THGNAME,OBSPROP[k])
@@ -60,3 +60,5 @@ if len(results) > 0:
                 else:
                     print("%s - WARNING: THING NAME '%s' HAS NOT OBSERVED PROPERTY '%s' " % (datetime.now().isoformat(), THGNAME, OBSPROP[k]))
     print("DATA COLLECTTION PROCESS END ON %s" % datetime.now().isoformat())
+else:
+    print("Query '%s' resulted in results '%s'" % (QUERY,results))
